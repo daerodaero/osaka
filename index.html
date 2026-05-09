@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>대로와 나나의 오사카 여행 허브</title>
+<meta name="description" content="대로와 나나가 정리한 오사카 맛집 지도와 오사카 여행 준비 콘텐츠를 모아둔 여행 허브입니다.">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Gaegu:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#f5ede0;
+    --red:#C8281A;
+    --ink:#2a1a0a;
+    --brown:#8B5E3C;
+    --line:rgba(139,94,60,0.1);
+    --paper:rgba(255,248,240,0.9);
+  }
+  body{
+    font-family:'Gaegu',cursive;
+    background:linear-gradient(160deg,#f7ece0 0%,#f0e2d0 100%);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px 20px;
+    position:relative;
+    overflow-y:auto;
+    color:var(--ink);
+  }
+  body::before{
+    content:'';
+    position:fixed;
+    inset:0;
+    background-image:repeating-linear-gradient(to bottom,transparent,transparent 39px,var(--line) 39px,var(--line) 40px);
+    pointer-events:none;
+  }
+  .deco{
+    position:fixed;
+    font-size:28px;
+    opacity:0.12;
+    pointer-events:none;
+    animation:float 6s ease-in-out infinite;
+  }
+  .deco:nth-child(1){top:8%;left:8%;animation-delay:0s}
+  .deco:nth-child(2){top:14%;right:9%;animation-delay:1s}
+  .deco:nth-child(3){bottom:20%;left:6%;animation-delay:2s}
+  .deco:nth-child(4){bottom:10%;right:8%;animation-delay:3s}
+  .deco:nth-child(5){top:45%;left:4%;animation-delay:1.5s}
+  .deco:nth-child(6){top:40%;right:4%;animation-delay:2.5s}
+  @keyframes float{
+    0%,100%{transform:translateY(0) rotate(0deg)}
+    50%{transform:translateY(-10px) rotate(5deg)}
+  }
+  .container{
+    max-width:420px;
+    width:100%;
+    position:relative;
+    z-index:1;
+    animation:fadeUp .8s ease both;
+  }
+  @keyframes fadeUp{
+    from{opacity:0;transform:translateY(24px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+  .tape{
+    width:60px;
+    height:18px;
+    background:rgba(200,40,26,0.18);
+    border-radius:2px;
+    margin:0 auto -9px;
+    position:relative;
+    z-index:2;
+  }
+  .hero{
+    background:rgba(255,248,240,0.86);
+    border-radius:20px;
+    padding:24px 22px 20px;
+    box-shadow:3px 4px 0 rgba(139,94,60,0.1);
+    border:1.5px solid rgba(139,94,60,0.1);
+    text-align:center;
+    margin-bottom:18px;
+  }
+  .hero-icon{
+    width:92px;
+    height:92px;
+    border-radius:50%;
+    margin:0 auto 12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(135deg,#fff4dc,#ffdca6);
+    font-size:44px;
+    box-shadow:2px 3px 0 rgba(139,94,60,0.08);
+  }
+  h1{
+    font-family:'Caveat',cursive;
+    font-size:31px;
+    font-weight:700;
+    line-height:1.15;
+    margin-bottom:8px;
+  }
+  .tagline{
+    font-size:15px;
+    line-height:1.6;
+    color:var(--brown);
+    opacity:.82;
+  }
+  .mini-note{
+    margin-top:12px;
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    padding:5px 10px;
+    border-radius:18px;
+    background:rgba(200,40,26,0.08);
+    color:var(--red);
+    font-size:12px;
+    font-weight:700;
+  }
+  .section-label{
+    margin:18px 2px 10px;
+    text-align:left;
+    font-size:14px;
+    color:var(--brown);
+    opacity:.75;
+    font-weight:700;
+  }
+  .cards{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .hub-card{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    background:var(--paper);
+    border:1.5px solid rgba(139,94,60,0.15);
+    border-radius:18px;
+    padding:15px 18px;
+    color:var(--ink);
+    text-decoration:none;
+    box-shadow:2px 3px 0 rgba(139,94,60,0.1);
+    transition:all .22s ease;
+    overflow:hidden;
+    position:relative;
+  }
+  .hub-card.active{
+    border-color:rgba(200,40,26,0.24);
+    background:rgba(255,250,244,0.96);
+  }
+  .hub-card.active:hover{
+    transform:translate(-1px,-2px);
+    box-shadow:4px 6px 0 rgba(200,40,26,0.15);
+  }
+  .hub-card.active:hover .arrow{transform:translateX(4px)}
+  .hub-card.soon{
+    opacity:.7;
+    background:rgba(255,248,240,0.68);
+    border-style:dashed;
+  }
+  .sticker{
+    font-size:34px;
+    flex-shrink:0;
+    filter:drop-shadow(1px 1px 0 rgba(0,0,0,0.08));
+  }
+  .card-info{
+    flex:1;
+    min-width:0;
+    text-align:left;
+  }
+  .card-title{
+    font-family:'Caveat',cursive;
+    font-size:22px;
+    font-weight:700;
+    line-height:1.15;
+  }
+  .card-sub{
+    font-size:13px;
+    color:var(--brown);
+    opacity:.72;
+    line-height:1.4;
+    margin-top:2px;
+  }
+  .badge{
+    flex-shrink:0;
+    background:var(--red);
+    color:white;
+    font-size:11px;
+    font-weight:700;
+    padding:3px 10px;
+    border-radius:20px;
+    box-shadow:1px 2px 0 rgba(200,40,26,0.3);
+    white-space:nowrap;
+  }
+  .badge.soon{
+    background:#f0ebe4;
+    color:#aaa;
+    box-shadow:1px 2px 0 rgba(0,0,0,0.06);
+  }
+  .arrow{
+    font-size:21px;
+    color:var(--red);
+    transition:transform .2s ease;
+    flex-shrink:0;
+  }
+  .coming-copy{
+    margin-top:14px;
+    padding:14px 16px;
+    background:rgba(255,248,240,0.72);
+    border:1.5px dashed rgba(139,94,60,0.18);
+    border-radius:18px;
+    box-shadow:2px 3px 0 rgba(139,94,60,0.06);
+    color:var(--brown);
+    font-size:13px;
+    line-height:1.55;
+    text-align:left;
+  }
+  .sns{
+    display:flex;
+    gap:10px;
+    margin-top:18px;
+  }
+  .sns-btn{
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    background:var(--paper);
+    border:1.5px solid rgba(139,94,60,0.15);
+    border-radius:16px;
+    padding:11px 14px;
+    color:var(--brown);
+    text-decoration:none;
+    font-size:15px;
+    box-shadow:2px 2px 0 rgba(139,94,60,0.08);
+    transition:all .2s ease;
+  }
+  .sns-btn:hover{
+    border-color:var(--red);
+    color:var(--red);
+    transform:translate(-1px,-1px);
+    box-shadow:3px 3px 0 rgba(200,40,26,0.12);
+  }
+  .footer{
+    margin-top:20px;
+    text-align:center;
+    font-size:12px;
+    color:#b8aa9b;
+  }
+  @media (max-width:380px){
+    body{padding:28px 14px}
+    .hero{padding:22px 18px 18px}
+    h1{font-size:28px}
+    .hub-card{padding:14px 15px;gap:11px}
+    .card-title{font-size:20px}
+    .badge{font-size:10px;padding:3px 8px}
+  }
+</style>
+</head>
+<body>
+
+<span class="deco">🏯</span>
+<span class="deco">🍜</span>
+<span class="deco">✈️</span>
+<span class="deco">🧳</span>
+<span class="deco">🐙</span>
+<span class="deco">💕</span>
+
+<main class="container">
+  <div class="tape"></div>
+  <section class="hero">
+    <div class="hero-icon">🏯</div>
+    <h1>오사카 여행 허브</h1>
+    <div class="tagline">대로와 나나가 직접 정리한<br>오사카 맛집과 여행 준비 자료를 모아둘게요.</div>
+    <div class="mini-note">먼저 맛집 지도부터 열어뒀어요</div>
+  </section>
+
+  <div class="section-label">지금 볼 수 있는 자료</div>
+  <div class="cards">
+    <a href="https://daeronana.com/osaka/food" class="hub-card active">
+      <span class="sticker">🍱</span>
+      <div class="card-info">
+        <div class="card-title">오사카 맛집 지도</div>
+        <div class="card-sub">직접 다녀오고 저장해둔 오사카 맛집 모음</div>
+      </div>
+      <span class="badge">OPEN ✨</span>
+      <span class="arrow">›</span>
+    </a>
+
+    <div class="hub-card soon">
+      <span class="sticker">🧳</span>
+      <div class="card-info">
+        <div class="card-title">오사카 여행 총정리</div>
+        <div class="card-sub">교통, 숙소 위치, 일정, 준비 팁까지 정리 중이에요</div>
+      </div>
+      <span class="badge soon">SOON</span>
+    </div>
+  </div>
+
+  <div class="coming-copy">
+    오사카 여행 총정리는 처음 가는 분들도 바로 일정 짤 수 있게 준비 중이에요.
+    맛집 지도와 함께 보면 여행 준비가 훨씬 쉬워지도록 하나씩 채워둘게요.
+  </div>
+
+  <div class="sns">
+    <a href="https://www.instagram.com/daero._.nana/" target="_blank" rel="noopener" class="sns-btn">인스타그램</a>
+    <a href="https://m.blog.naver.com/dleogh888" target="_blank" rel="noopener" class="sns-btn">블로그</a>
+  </div>
+
+  <div class="footer">Copyright 2026 daero._.nana. All Rights Reserved.</div>
+</main>
+
+</body>
+</html>
