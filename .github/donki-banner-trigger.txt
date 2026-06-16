@@ -1,0 +1,2 @@
+trigger: donki banner jpg update
+updated_at: 2026-06-17T04:05:00+09:00
