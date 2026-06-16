@@ -1,0 +1,41 @@
+name: Update Donki banner asset
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/donki-banner-trigger.txt'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Replace SVG banner with JPG banner
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          old = 'https://daeronana.com/assets/donki-coupon-banner.svg'
+          new = 'https://daeronana.com/assets/donki-coupon-banner.jpg'
+          changed = []
+          for path in [Path('index.html'), Path('food/index.html'), Path('snorkeling/index.html')]:
+              if path.exists():
+                  text = path.read_text(encoding='utf-8')
+                  if old in text:
+                      path.write_text(text.replace(old, new), encoding='utf-8')
+                      changed.append(str(path))
+          print('updated:', ', '.join(changed) if changed else 'none')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html food/index.html snorkeling/index.html 2>/dev/null || true
+          if ! git diff --cached --quiet; then
+            git commit -m "Use JPG Donki coupon banner"
+            git push
+          fi
