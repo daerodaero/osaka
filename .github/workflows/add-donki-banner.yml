@@ -1,0 +1,80 @@
+name: Add Donki coupon banner
+
+on:
+  push:
+    paths:
+      - '.github/workflows/add-donki-banner.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch pages
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          CSS = r'''
+
+          /* 돈키호테 면세 쿠폰 배너 */
+          .dn-donki-wrap{width:100%;max-width:980px;margin:14px auto 16px;padding:0 16px}
+          .dn-donki-box{background:rgba(255,249,243,0.96);border:1.5px solid rgba(200,40,26,0.16);border-radius:14px;padding:10px 12px 12px;box-shadow:0 8px 20px rgba(200,40,26,0.12)}
+          .dn-donki-copy{margin:0 2px 8px;text-align:left}
+          .dn-donki-title{display:flex;align-items:center;gap:5px;font-size:13px;font-weight:800;color:var(--ink,#1A0A00);line-height:1.35;letter-spacing:-0.2px}
+          .dn-donki-sub{margin-top:2px;font-size:11px;font-weight:600;color:var(--ink3,#9C7B6B);line-height:1.4;letter-spacing:-0.2px}
+          .dn-donki-banner{display:block;width:100%;border-radius:10px;overflow:hidden;background:white;border:1px solid rgba(200,40,26,0.12)}
+          .dn-donki-banner img{display:block;width:100%;height:auto}
+          .dn-donki-banner:active{transform:scale(0.99)}
+          @media (max-width:380px){.dn-donki-wrap{padding:0 12px;margin:12px auto 14px}.dn-donki-box{padding:9px 10px 10px}.dn-donki-title{font-size:12.5px}.dn-donki-sub{font-size:10.5px}}
+          '''
+
+          HTML = r'''
+
+          <!-- 돈키호테 면세 쿠폰 배너 -->
+          <section class="dn-donki-wrap" aria-label="일본 돈키호테 면세 쿠폰">
+            <div class="dn-donki-box">
+              <div class="dn-donki-copy">
+                <div class="dn-donki-title"><span aria-hidden="true">🎟️</span><span>일본 돈키호테 면세 쿠폰</span></div>
+                <div class="dn-donki-sub">아래 배너를 누르면 쿠폰 링크가 나옵니다</div>
+              </div>
+              <a class="dn-donki-banner" href="https://japanportal.donki-global.com/coupon/?ptcd=0298000004" target="_blank" rel="nofollow sponsored noopener" aria-label="돈키호테 면세 쿠폰 받기">
+                <img src="https://daeronana.com/assets/donki-coupon-banner.svg" alt="돈키호테 면세 쿠폰 받기" loading="lazy">
+              </a>
+            </div>
+          </section>
+          '''
+
+          def patch(path):
+              p = Path(path)
+              if not p.exists():
+                  return False
+              s = p.read_text(encoding='utf-8')
+              if 'dn-donki-wrap' in s:
+                  return False
+              if '</style>' in s:
+                  s = s.replace('</style>', CSS + '\n</style>', 1)
+              if '</header>' in s:
+                  s = s.replace('</header>', '</header>' + HTML, 1)
+              elif '<body>' in s:
+                  s = s.replace('<body>', '<body>' + HTML, 1)
+              else:
+                  raise SystemExit(f'No insertion point in {path}')
+              p.write_text(s, encoding='utf-8')
+              return True
+
+          changed = False
+          for target in ['food/index.html']:
+              changed = patch(target) or changed
+          Path('.github/workflows/add-donki-banner.yml').unlink(missing_ok=True)
+          PY
+      - name: Commit patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add food/index.html .github/workflows/add-donki-banner.yml
+          git commit -m "Add Donki coupon banner to food page" || exit 0
+          git push
